@@ -20,8 +20,8 @@
     <echo message="Please run: $ant -projecthelp"/>
   </target>
 
-    <target name="SystemInfoExample">
-        <junit printSummary="yes" haltonerror="true" haltonfailure="true" fork="false" dir=".">
+    <target name="test-only">
+        <junit printSummary="yes" haltonerror="false" haltonfailure="false" fork="false">
           <sysproperty key="basedir" value="."/>
           <formatter type="plain" usefile="false"/>
           <classpath>
