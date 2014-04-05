@@ -33,6 +33,7 @@ import com.pi4j.io.serial.SerialDataEvent;
 import com.pi4j.io.serial.SerialDataListener;
 import com.pi4j.io.serial.SerialFactory;
 import com.pi4j.io.serial.SerialPortException;
+import org.junit.Test;
 
 import java.util.Date;
 
@@ -43,7 +44,8 @@ import java.util.Date;
  */
 public class SerialExample {
 
-    public static void main(String args[]) throws InterruptedException {
+   @Test
+   public void main() throws InterruptedException {
 
         // !! ATTENTION !!
         // By default, the serial port is configured as a console port

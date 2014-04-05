@@ -36,6 +36,7 @@ import com.pi4j.io.gpio.GpioPinDigitalOutput;
 import com.pi4j.io.gpio.PinPullResistance;
 import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.RaspiPin;
+import org.junit.Test;
 
 /**
  * This example code demonstrates how to perform simple state
@@ -45,7 +46,8 @@ import com.pi4j.io.gpio.RaspiPin;
  */
 public class ShutdownGpioExample {
 
-    public static void main(String[] args) throws InterruptedException {
+   @Test
+   public void main() throws InterruptedException {
 
         System.out.println("<--Pi4J--> GPIO Shutdown Example ... started.");
 
