@@ -29,6 +29,7 @@ package test.org.jboss.devnation.pilab;
 
 import com.pi4j.system.NetworkInfo;
 import com.pi4j.system.SystemInfo;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.text.ParseException;
@@ -41,8 +42,8 @@ import java.text.ParseException;
  */
 public class SystemInfoExample {
 
-    public static void main(String[] args) throws InterruptedException, IOException, ParseException {
-
+   @Test
+   public void testSystemInfo() throws InterruptedException, IOException, ParseException {
         // display a few of the available system information properties
         System.out.println("----------------------------------------------------");
         System.out.println("HARDWARE INFO");
