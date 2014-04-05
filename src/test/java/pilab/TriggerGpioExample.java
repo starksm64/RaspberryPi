@@ -1,4 +1,4 @@
-package test.org.jboss.devnation.pilab;
+package pilab;
 
 // START SNIPPET: trigger-gpio-snippet
 

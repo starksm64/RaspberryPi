@@ -1,14 +1,12 @@
-package test.org.jboss.devnation.pilab;
-
-// START SNIPPET: shutdown-gpio-snippet
-
+package pilab;
+// START SNIPPET: control-gpio-snippet
 
 /*
  * #%L
  * **********************************************************************
  * ORGANIZATION  :  Pi4J
  * PROJECT       :  Pi4J :: Java Examples
- * FILENAME      :  ShutdownGpioExample.java
+ * FILENAME      :  ControlGpioExample.java
  *
  * This file is part of the Pi4J project. More information about
  * this project can be found here:  http://www.pi4j.com/
@@ -33,7 +31,6 @@ package test.org.jboss.devnation.pilab;
 import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioFactory;
 import com.pi4j.io.gpio.GpioPinDigitalOutput;
-import com.pi4j.io.gpio.PinPullResistance;
 import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.RaspiPin;
 
@@ -43,35 +40,46 @@ import com.pi4j.io.gpio.RaspiPin;
  *
  * @author Robert Savage
  */
-public class ShutdownGpioExample {
+public class ControlGpioExample {
 
     public static void main(String[] args) throws InterruptedException {
 
-        System.out.println("<--Pi4J--> GPIO Shutdown Example ... started.");
+        System.out.println("<--Pi4J--> GPIO Control Example ... started.");
 
         // create gpio controller
         final GpioController gpio = GpioFactory.getInstance();
 
         // provision gpio pin #01 as an output pin and turn on
-        final GpioPinDigitalOutput pin = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_01, PinState.HIGH);
-
-        // configure the pin shutdown behavior; these settings will be
-        // automatically applied to the pin when the application is terminated
-        pin.setShutdownOptions(true, PinState.LOW, PinPullResistance.OFF);
-
+        final GpioPinDigitalOutput pin = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_01, "MyLED", PinState.HIGH);
         System.out.println("--> GPIO state should be: ON");
-        System.out.println("    This program will automatically terminate in 10 seconds,");
-        System.out.println("    or you can use the CTRL-C keystroke to terminate at any time.");
-        System.out.println("    When the program terminates, the GPIO state should be shutdown and set to: OFF");
 
-        // wait 10 seconds
-        Thread.sleep(10000);
+        Thread.sleep(5000);
 
-        System.out.println(" .. shutting down now ...");
+        // turn off gpio pin #01
+        pin.low();
+        System.out.println("--> GPIO state should be: OFF");
+
+        Thread.sleep(5000);
+
+        // toggle the current state of gpio pin #01 (should turn on)
+        pin.toggle();
+        System.out.println("--> GPIO state should be: ON");
+
+        Thread.sleep(5000);
+
+        // toggle the current state of gpio pin #01  (should turn off)
+        pin.toggle();
+        System.out.println("--> GPIO state should be: OFF");
+
+        Thread.sleep(5000);
+
+        // turn on gpio pin #01 for 1 second and then off
+        System.out.println("--> GPIO state should be: ON for only 1 second");
+        pin.pulse(1000, true); // set second argument to 'true' use a blocking call
 
         // stop all GPIO activity/threads by shutting down the GPIO controller
         // (this method will forcefully shutdown all GPIO monitoring threads and scheduled tasks)
         gpio.shutdown();
     }
 }
-//END SNIPPET: shutdown-gpio-snippet
+//END SNIPPET: control-gpio-snippet
