@@ -9,50 +9,61 @@ Generated using mvn ant:ant
 
 <project name="iotweb" default="package" basedir=".">
 
-  <!-- ====================================================================== -->
-  <!-- Import maven-build.xml into the current project                        -->
-  <!-- ====================================================================== -->
+    <!-- ====================================================================== -->
+    <!-- Import maven-build.xml into the current project                        -->
+    <!-- ====================================================================== -->
 
-  <import file="maven-build.xml"/>
-  
-  <!-- ====================================================================== -->
-  <!-- Help target                                                            -->
-  <!-- ====================================================================== -->
+    <import file="maven-build.xml"/>
 
-  <target name="help">
-    <echo message="Please run: $ant -projecthelp"/>
-  </target>
+    <!-- ====================================================================== -->
+    <!-- Help target                                                            -->
+    <!-- ====================================================================== -->
+
+    <target name="help">
+        <echo message="Please run: $ant -projecthelp"/>
+    </target>
 
     <target name="test-only">
         <junit printSummary="yes" haltonerror="false" haltonfailure="false" fork="true">
-          <sysproperty key="basedir" value="."/>
-          <formatter type="plain" usefile="false"/>
-          <classpath>
-            <path refid="build.test.classpath"/>
-            <pathelement location="${maven.build.outputDir}"/>
-            <pathelement location="${maven.build.testOutputDir}"/>
-          </classpath>
-          <batchtest todir="${maven.test.reports}" unless="test">
-            <fileset dir="${maven.build.testDir.0}">
-              <include name="**/*.java"/>
-              <exclude name="**/*Abstract*Test.java"/>
-            </fileset>
-          </batchtest>
-          <batchtest todir="${maven.test.reports}" if="test">
-            <fileset dir="${maven.build.testDir.0}">
-              <include name="**/${test}.java"/>
-              <exclude name="**/*Abstract*Test.java"/>
-            </fileset>
-          </batchtest>
+            <sysproperty key="basedir" value="."/>
+            <formatter type="plain" usefile="false"/>
+            <classpath>
+                <path refid="build.test.classpath"/>
+                <pathelement location="${maven.build.outputDir}"/>
+                <pathelement location="${maven.build.testOutputDir}"/>
+            </classpath>
+            <batchtest todir="${maven.test.reports}" unless="test">
+                <fileset dir="${maven.build.testDir.0}">
+                    <include name="**/*.java"/>
+                    <exclude name="**/*Abstract*Test.java"/>
+                </fileset>
+            </batchtest>
+            <batchtest todir="${maven.test.reports}" if="test">
+                <fileset dir="${maven.build.testDir.0}">
+                    <include name="**/${test}.java"/>
+                    <exclude name="**/*Abstract*Test.java"/>
+                </fileset>
+            </batchtest>
         </junit>
     </target>
 
     <target name="BlinkIpAddress">
         <java classname="pilab.BlinkIpAddress">
-            <arg value="1" />
+            <arg value="1"/>
             <classpath>
                 <pathelement location="${maven.build.testOutputDir}"/>
             </classpath>
         </java>
+    </target>
+    <target name="blink.jar">
+        <jar destfile="target/blink.jar">
+            <fileset dir="target/test-classes">
+                <include name="pilab/BlinkIpAddress.class"/>
+            </fileset>
+            <manifest>
+                <attribute name="Main-Class"
+                           value="pilab.BlinkIpAddress"/>
+            </manifest>
+        </jar>
     </target>
 </project>

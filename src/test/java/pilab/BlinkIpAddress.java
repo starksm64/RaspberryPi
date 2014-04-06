@@ -14,7 +14,10 @@ package pilab;
  */
 
 import java.io.FileOutputStream;
+import java.net.Inet4Address;
 import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.util.Enumeration;
 
 /**
  * Based on perl script blick_ip.pl:
@@ -25,11 +28,41 @@ import java.net.InetAddress;
  */
 public class BlinkIpAddress {
    private static final String LED0 = "/sys/class/leds/led0/brightness";
-   private static final int ZERO = Character.getNumericValue('0');
    private static FileOutputStream outb;
 
    public static void main(String[] args) throws Exception {
-      InetAddress inetAddress = InetAddress.getLocalHost();
+      Enumeration<NetworkInterface> ifaces = NetworkInterface.getNetworkInterfaces();
+      NetworkInterface nonloopback = null;
+      // Choose the first non-loopback interface
+      while(ifaces.hasMoreElements()) {
+         NetworkInterface iface = ifaces.nextElement();
+         System.out.printf("Checking iface: %s\n", iface.getDisplayName());
+         if(iface.isUp() && iface.isLoopback() == false) {
+            nonloopback = iface;
+         }
+      }
+
+      if(nonloopback == null) {
+         throw new IllegalStateException("Failed to find an nonloopback interface that is up");
+      }
+      byte[] mac = nonloopback.getHardwareAddress();
+      System.out.printf("mac.length=%d\n", mac.length);
+      StringBuilder macaddr = new StringBuilder();
+      for(int n = 0; n < mac.length; n ++) {
+         String x = String.format("%x", mac[n]);
+         macaddr.append(x);
+         macaddr.append(':');
+      }
+      macaddr.setLength(macaddr.length()-1);
+      Enumeration<InetAddress> inetAddresses = nonloopback.getInetAddresses();
+      InetAddress inetAddress = null;
+      while(inetAddresses.hasMoreElements()) {
+         inetAddress = inetAddresses.nextElement();
+         if(inetAddress instanceof Inet4Address)
+            break;
+      }
+      System.out.printf("Selected %s, %s[%s]\n", nonloopback.getDisplayName(), inetAddress, macaddr);
+
       outb = new FileOutputStream(LED0);
       int iterations = -1;
       if(args.length > 0)
@@ -64,7 +97,8 @@ public class BlinkIpAddress {
                if(octets[i][j] == '0')
                   display_zero();
                else
-                  display_blink(octets[i][j], 10, 10);
+                  display_blink(octets[i][j], 500, 500);
+               Thread.sleep(1000);
             }
          }
          System.out.printf("------------\n");
@@ -77,10 +111,10 @@ public class BlinkIpAddress {
     */
    static void display_start() throws Exception {
        for (int i = 0; i < 50; i ++) {
-           Thread.sleep(10);
-           outb.write(1);
-          Thread.sleep(10);
-           outb.write(0);
+           Thread.sleep(100);
+           outb.write(Character.forDigit(1, 10));
+          Thread.sleep(100);
+           outb.write(Character.forDigit(0, 10));
        }
        Thread.sleep(4000);
    }
@@ -91,10 +125,10 @@ public class BlinkIpAddress {
     */
    static void display_zero() throws Exception {
       for (int i = 0; i < 10; i ++) {
-         Thread.sleep(10);
-         outb.write(1);
-         Thread.sleep(10);
-         outb.write(0);
+         Thread.sleep(100);
+         outb.write(Character.forDigit(1, 10));
+         Thread.sleep(100);
+         outb.write(Character.forDigit(0, 10));
        }
    }
 
@@ -106,12 +140,13 @@ public class BlinkIpAddress {
     * @throws Exception
     */
    static void display_blink(char c, int delay, int dwell) throws Exception {
-      int digit = Character.getNumericValue(c) - ZERO;
+      int digit = Character.digit(c, 10);
       for (int i = 0; i < digit; i ++) {
          Thread.sleep(dwell);
-         outb.write(1);
+         outb.write(Character.forDigit(1, 10));
          Thread.sleep(delay);
-         outb.write(0);
+         outb.write(Character.forDigit(0, 10));
        }
+
    }
 }
