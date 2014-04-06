@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!-- ====================================================================== -->
-<!-- Ant build file (http://ant.apache.org/) for Ant 1.6.2 or above.        -->
+<!-- Ant build file (http://ant.apache.org/) for Ant 1.6.2 or above.
+Generated using mvn ant:ant
+-->
+
 <!-- ====================================================================== -->
 
 <project name="iotweb" default="package" basedir=".">
@@ -42,5 +45,14 @@
             </fileset>
           </batchtest>
         </junit>
+    </target>
+
+    <target name="BlinkIpAddress">
+        <java classname="pilab.BlinkIpAddress">
+            <arg value="1" />
+            <classpath>
+                <pathelement location="${maven.build.testOutputDir}"/>
+            </classpath>
+        </java>
     </target>
 </project>

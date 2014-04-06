@@ -33,6 +33,7 @@ import com.pi4j.io.serial.SerialDataEvent;
 import com.pi4j.io.serial.SerialDataListener;
 import com.pi4j.io.serial.SerialFactory;
 import com.pi4j.io.serial.SerialPortException;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Date;
@@ -44,7 +45,8 @@ import java.util.Date;
  */
 public class SerialExample {
 
-   @Test
+   @Test(timeout = 10)
+   @Ignore("Needs serial console input to terminate")
    public void main() throws InterruptedException {
 
         // !! ATTENTION !!
