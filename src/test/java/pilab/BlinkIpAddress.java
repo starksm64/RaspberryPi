@@ -20,7 +20,7 @@ import java.net.NetworkInterface;
 import java.util.Enumeration;
 
 /**
- * Based on perl script blick_ip.pl:
+ * Based on perl script blink_ip.pl:
  * https://gist.github.com/chrismeyersfsu/2858824
  * Must be run as root.
  *
@@ -30,6 +30,11 @@ public class BlinkIpAddress {
    private static final String LED0 = "/sys/class/leds/led0/brightness";
    private static FileOutputStream outb;
 
+   /**
+    * Run the blink sequence on LED0
+    * @param args args[0] = optional number of iterations to perform
+    * @throws Exception
+    */
    public static void main(String[] args) throws Exception {
       Enumeration<NetworkInterface> ifaces = NetworkInterface.getNetworkInterfaces();
       NetworkInterface nonloopback = null;
@@ -46,7 +51,6 @@ public class BlinkIpAddress {
          throw new IllegalStateException("Failed to find an nonloopback interface that is up");
       }
       byte[] mac = nonloopback.getHardwareAddress();
-      System.out.printf("mac.length=%d\n", mac.length);
       StringBuilder macaddr = new StringBuilder();
       for(int n = 0; n < mac.length; n ++) {
          String x = String.format("%x", mac[n]);
@@ -61,6 +65,7 @@ public class BlinkIpAddress {
          if(inetAddress instanceof Inet4Address)
             break;
       }
+      // Print out interface name, ip address and mac address
       System.out.printf("Selected %s, %s[%s]\n", nonloopback.getDisplayName(), inetAddress, macaddr);
 
       outb = new FileOutputStream(LED0);
@@ -71,6 +76,7 @@ public class BlinkIpAddress {
       System.out.printf("Doing (%s) iterations of the link sequence for IPAddress(%s); -1==infinite\n", iterStr,
          inetAddress.getHostAddress());
 
+      // Build the fully padded xxx.xxx.xxx.xxx address so we can represent every digit in the address
       StringBuilder fullyPaddedAddress = new StringBuilder();
       byte[] baddr = inetAddress.getAddress();
       char[][] octets = {{'0', '0', '0'},{'0', '0', '0'}, {'0', '0', '0'}, {'0', '0', '0'}};
