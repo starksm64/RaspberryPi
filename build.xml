@@ -24,7 +24,7 @@ Generated using mvn ant:ant
   </target>
 
     <target name="test-only">
-        <junit printSummary="yes" haltonerror="false" haltonfailure="false" fork="false">
+        <junit printSummary="yes" haltonerror="false" haltonfailure="false" fork="true">
           <sysproperty key="basedir" value="."/>
           <formatter type="plain" usefile="false"/>
           <classpath>
