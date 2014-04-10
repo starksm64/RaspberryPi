@@ -1,4 +1,4 @@
-package pilab;
+package org.jboss.devnation.pilab.web;
 /*
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,25 +13,14 @@ package pilab;
  * limitations under the License.
  */
 
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Named;
+
 /**
- * Based on perl script blink_ip.pl:
- * https://gist.github.com/chrismeyersfsu/2858824
- * Must be run as root.
- *
  * @author Scott Stark (sstark@redhat.com) (C) 2014 Red Hat Inc.
  */
-public class BlinkIpAddress {
+@Named
+@ApplicationScoped
+public class PiInfo {
 
-   /**
-    * Run the blink sequence on LED0
-    * @param args args[0] = optional number of iterations to perform
-    * @throws Exception
-    */
-   public static void main(String[] args) throws Exception {
-      int iterations = -1;
-      if (args.length > 0)
-         iterations = Integer.parseInt(args[0]);
-      org.jboss.devnation.pilab.BlinkIpAddress blinker = new org.jboss.devnation.pilab.BlinkIpAddress(iterations);
-      blinker.start();
-   }
 }

@@ -1,0 +1,53 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:rich="http://richfaces.org/rich">
+<h:head>
+    <title>Raspberry Pi Hackathon</title>
+    <h:outputStylesheet library="css" name="application.css" target="head"/>
+</h:head>
+<h:body>
+
+    <ui:composition>
+    <h:form id="mainMenu">
+        <rich:toolbar height="50px">
+            <rich:dropDownMenu mode="server">
+                <f:facet name="label">
+                     <h:outputText value="System"/>
+                </f:facet>
+                <rich:menuItem label="Home" action="index" />
+                <rich:menuItem label="System Info" action="systeminfo" />
+                <rich:menuItem label="IPAddress" action="ipaddr" />
+                <rich:menuItem label="Tutorial" action="tutorial"/>
+            </rich:dropDownMenu>
+
+            <rich:dropDownMenu mode="server">
+                <f:facet name="label">
+                    <h:panelGrid cellpadding="0" cellspacing="0" columns="2" style="vertical-align:middle">
+                        <h:outputText value="Links"/>
+                    </h:panelGrid>
+                </f:facet>
+                <rich:menuItem onclick="document.location.href='http://raspberrypi.org/'">
+                    <h:outputLink value="http://raspberrypi.org">
+                        <h:outputText value="Raspberry Pi Home"></h:outputText>
+                    </h:outputLink>
+                </rich:menuItem>
+
+                <rich:menuItem onclick="document.location.href='http://pi4j.com'">
+                    <h:outputLink value="http://pi4j.com">
+                        <h:outputText value="Pi4j Home"></h:outputText>
+                    </h:outputLink>
+                </rich:menuItem>
+                <rich:menuItem onclick="document.location.href='http://wildfly.org'">
+                    <h:outputLink value="http://pi4j.com">
+                        <h:outputText value="Wildfly.org Home"></h:outputText>
+                    </h:outputLink>
+                </rich:menuItem>
+            </rich:dropDownMenu>
+        </rich:toolbar>
+    </h:form>
+    </ui:composition>
+</h:body>
+</html>

@@ -1,0 +1,35 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:rich="http://richfaces.org/rich">
+<h:head>
+    <ui:insert name="title" >
+        <title>Raspberry Pi Hackathon</title>
+    </ui:insert>
+    <h:outputStylesheet library="css" name="application.css" target="head"/>
+</h:head>
+<h:body>
+    <div id="page">
+
+   	    <div id="header">
+   		<ui:insert name="header" >
+   		  <ui:include src="/template/menu.xhtml" />
+   		</ui:insert>
+   	    </div>
+
+   	    <div id="content">
+   	  	<ui:insert name="content" >
+            <ui:include src="/template/defaultContent.xhtml" />
+   	   	</ui:insert>
+   	    </div>
+
+   	    <div id="footer">
+   	    	<ui:insert name="footer" >
+   	    	</ui:insert>
+   	    </div>
+
+    </div>
+</h:body>
+</html>

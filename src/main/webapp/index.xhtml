@@ -1,5 +1,61 @@
-<html>
-<body>
-<h2>Hello World!</h2>
-</body>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:rich="http://richfaces.org/rich">
+
+<ui:composition template="template/main.xhtml">
+    <ui:define name="content">
+
+        <h:form id="home">
+            <rich:accordion>
+                <rich:accordionItem header="Overview:">
+                    <h:graphicImage value="/images/Raspi_Colour_R.png" style="float:right" alt="RaspberryPi"
+                                    height="64"/>
+
+                    <p>The Raspberry Pi &reg; is a low cost(~$35), credit-card sized computer that plugs into a computer monitor or TV, and
+                        uses a standard keyboard and mouse. It is a capable little device that enables people of all ages to explore
+                        computing, and to learn how to program. It’s capable of doing everything you’d expect a desktop computer to
+                        do, from browsing the internet and playing high-definition video, to making spreadsheets, word-processing,
+                        and playing games. Your reading this from a Raspberry Pi running Java&reg; SE 7 and the JBoss&reg; Java&reg;
+                        EE7 Wildfly implementation.
+                    </p>
+                </rich:accordionItem>
+                <rich:accordionItem header="Accessing Your Raspberry Pi">
+                    <p>You may access your Raspberry Pi by sshing into it as follows:
+                        <code>
+                            ssh -l jbosspi #{piApp.ipAddress}
+                        </code>
+                        using jbosspi as the password when you are prompted.
+                    </p>
+                    <p>The jbosspi user has sudo access so you can run priviledged commands. You may also
+                    simply su to root or login as root. The root password is also jbosspi.</p>
+
+                    <p>
+                        The operating system is a version of Fedora 18 called pidora. Once you are logged in,
+                        you can explore the installation, check on the Wildfly server status, use yum to install
+                        additional packages, etc. The Wildfly installation is located in the ~jbosspi home directory.
+                        You can control the server using the service command to run the /etc/init.d/wildfly script:
+                        <code>
+                            [jbosspi@raspi ~]$ service wildfly
+                            Usage: /etc/init.d/wildfly {start|stop|status|restart}
+                            [jbosspi@raspi ~]$ service wildfly status
+                            wildfly is running (pid 4450)
+                        </code>
+                    </p>
+                </rich:accordionItem>
+            </rich:accordion>
+        </h:form>
+        <br/>
+        <rich:panel>
+            <h:panelGrid>
+                <h:graphicImage url="images/pidora_SD-150x150.png" height="100"/>
+                <h:link outcome="http://www.raspberrypi.org"><h:graphicImage url="images/RaspberryPi3-Web-Logo.jpg"
+                                                                             height="100"/></h:link>
+            </h:panelGrid>
+        </rich:panel>
+    </ui:define>
+</ui:composition>
 </html>

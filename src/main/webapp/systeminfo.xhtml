@@ -1,0 +1,138 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:rich="http://richfaces.org/rich">
+<ui:composition template="template/main.xhtml">
+    <ui:define name="content">
+
+        <h:form>
+            <a4j:poll id="poll" interval="500" enabled="#{systemInfoView.enabled}" render="poll,grid"/>
+        </h:form>
+
+        <rich:panel style="padding:0" header="Raspberry Pi System Information">
+            <rich:panel header="Hardware Information">
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="Serial Number: "/>
+                    <h:outputText value="#{systemInfoView.serial}"/>
+                    <h:outputLabel value="CPU Revision: "/>
+                    <h:outputText value="#{systemInfoView.cpuRevision}"/>
+                    <h:outputLabel value="CPU Architecture: "/>
+                    <h:outputText value="#{systemInfoView.cpuArchitecture}"/>
+                    <h:outputLabel value="CPU Hardware: "/>
+                    <h:outputText value="#{systemInfoView.hardware}"/>
+                    <h:outputLabel value="CPU Implementer: "/>
+                    <h:outputText value="#{systemInfoView.cpuImplementer}"/>
+                    <h:outputLabel value="CPU Part: "/>
+                    <h:outputText value="#{systemInfoView.cpuPart}"/>
+                    <h:outputLabel value="CPU Variant: "/>
+                    <h:outputText value="#{systemInfoView.cpuVariant}"/>
+                    <h:outputLabel value="CPU Temperature: "/>
+                    <h:outputText value="#{systemInfoView.cpuTemperature}"/>
+                    <h:outputLabel value="CPU Core Voltage: "/>
+                    <h:outputText value="#{systemInfoView.cpuVoltage}"/>
+                    <h:outputLabel value="MIPS: "/>
+                    <h:outputText value="#{systemInfoView.bogoMIPS}"/>
+                    <h:outputLabel value="Processor: "/>
+                    <h:outputText value="#{systemInfoView.processor}"/>
+                    <h:outputLabel value="Hardware Revision: "/>
+                    <h:outputText value="#{systemInfoView.revision}"/>
+                    <h:outputLabel value="Has Hard Float ABI: "/>
+                    <h:outputText value="#{systemInfoView.hardFloatAbi}"/>
+                    <h:outputLabel value="Board Type: "/>
+                    <h:outputText value="#{systemInfoView.boardType}"/>
+                </h:panelGrid>
+            </rich:panel>
+            <rich:panel header="Memory Information">
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="Total Memory: "/>
+                    <h:outputText value="#{systemInfoView.memoryTotal}"/>
+                    <h:outputLabel value="Used Memory: "/>
+                    <h:outputText value="#{systemInfoView.memoryUsed}"/>
+                    <h:outputLabel value="Free Memory: "/>
+                    <h:outputText value="#{systemInfoView.memoryFree}"/>
+                    <h:outputLabel value="Shared Memory: "/>
+                    <h:outputText value="#{systemInfoView.memoryShared}"/>
+                    <h:outputLabel value="Memory Buffers: "/>
+                    <h:outputText value="#{systemInfoView.memoryBuffers}"/>
+                    <h:outputLabel value="Cached Memory: "/>
+                    <h:outputText value="#{systemInfoView.memoryCached}"/>
+                    <h:outputLabel value="SDRAM_C Voltage: "/>
+                    <h:outputText value="#{systemInfoView.memoryVoltageSDRam_C}"/>
+                    <h:outputLabel value="SDRAM_I Voltage: "/>
+                    <h:outputText value="#{systemInfoView.memoryVoltageSDRam_I}"/>
+                    <h:outputLabel value="SDRAM_P Voltage: "/>
+                    <h:outputText value="#{systemInfoView.memoryVoltageSDRam_P}"/>
+                </h:panelGrid>
+            </rich:panel>
+            <rich:panel header="Operating System Information">
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="OS Name: "/>
+                    <h:outputText value="#{systemInfoView.osName}"/>
+                    <h:outputLabel value="OS Version: "/>
+                    <h:outputText value="#{systemInfoView.osVersion}"/>
+                    <h:outputLabel value="OS Architecture: "/>
+                    <h:outputText value="#{systemInfoView.osArch}"/>
+                    <h:outputLabel value="OS Firmware Build: "/>
+                    <h:outputText value="#{systemInfoView.osFirmwareBuild}"/>
+                    <h:outputLabel value="OS Firmware Date: "/>
+                    <h:outputText value="#{systemInfoView.osFirmwareDate}"/>
+                </h:panelGrid>
+            </rich:panel>
+            <rich:panel header="Java Environment Information">
+                <h:panelGrid columns="2">
+                    <h:outputLabel value="Java Vendor: "/>
+                    <h:outputText value="#{systemInfoView.javaVendor}"/>
+                    <h:outputLabel value="Java Vendor URL: "/>
+                    <h:outputText value="#{systemInfoView.javaVendorUrl}"/>
+                    <h:outputLabel value="Java Version: "/>
+                    <h:outputText value="#{systemInfoView.javaVersion}"/>
+                    <h:outputLabel value="Java VM: "/>
+                    <h:outputText value="#{systemInfoView.javaVirtualMachine}"/>
+                    <h:outputLabel value="Java Runtime: "/>
+                    <h:outputText value="#{systemInfoView.javaRuntime}"/>
+                </h:panelGrid>
+                <rich:panel header="Clock Information">
+                    <h:panelGrid columns="2">
+                        <h:outputLabel value="ARM Frequency: "/>
+                        <h:outputText value="#{systemInfoView.clockFrequencyArm}"/>
+                        <h:outputLabel value="CORE Frequency: "/>
+                        <h:outputText value="#{systemInfoView.clockFrequencyCore}"/>
+                        <h:outputLabel value="H264 Frequency: "/>
+                        <h:outputText value="#{systemInfoView.clockFrequencyH264}"/>
+                        <h:outputLabel value="ISP Frequency: "/>
+                        <h:outputText value="#{systemInfoView.clockFrequencyISP}"/>
+                        <h:outputLabel value="V3D Frequency: "/>
+                        <h:outputText value="#{systemInfoView.clockFrequencyV3D}"/>
+                        <h:outputLabel value="UART Frequency: "/>
+                        <h:outputText value="#{systemInfoView.clockFrequencyUART}"/>
+                        <h:outputLabel value="PWM Frequency: "/>
+                        <h:outputText value="#{systemInfoView.clockFrequencyPWM}"/>
+                        <h:outputLabel value="EMMC Frequency: "/>
+                        <h:outputText value="#{systemInfoView.clockFrequencyEMMC}"/>
+                        <h:outputLabel value="Pixel Frequency: "/>
+                        <h:outputText value="#{systemInfoView.clockFrequencyPixel}"/>
+                        <h:outputLabel value="VEC Frequency: "/>
+                        <h:outputText value="#{systemInfoView.clockFrequencyVEC}"/>
+                        <h:outputLabel value="HDMI Frequency: "/>
+                        <h:outputText value="#{systemInfoView.clockFrequencyHDMI}"/>
+                        <h:outputLabel value="DPI Frequency: "/>
+                        <h:outputText value="#{systemInfoView.clockFrequencyDPI}"/>
+                    </h:panelGrid>
+                </rich:panel>
+                <rich:panel header="CODEC Information">
+                    <h:panelGrid columns="2">
+                        <h:outputLabel value="H264 Enabled: "/>
+                        <h:outputText value="#{systemInfoView.codecH264Enabled}"/>
+                        <h:outputLabel value="MPG2 Enabled: "/>
+                        <h:outputText value="#{systemInfoView.codecMPG2Enabled}"/>
+                        <h:outputLabel value="WVC1 Enabled: "/>
+                        <h:outputText value="#{systemInfoView.codecWVC1Enabled}: "/>
+                    </h:panelGrid>
+                </rich:panel>
+            </rich:panel>
+        </rich:panel>
+    </ui:define>
+</ui:composition>
+</html>

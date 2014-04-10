@@ -1,0 +1,58 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:a4j="http://richfaces.org/a4j"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:rich="http://richfaces.org/rich" xmlns:face="http://java.sun.com/jsp/jstl/fmt">
+
+<ui:composition template="template/main.xhtml">
+    <ui:define name="content">
+
+        <h:form>
+            <a4j:poll id="poll" interval="500" enabled="#{blinkStatus.enabled}" render="poll,grid"/>
+        </h:form>
+
+        <h:form>
+            <rich:panel style="padding:0" header="Raspberry Pi IP Address">
+                <h:panelGrid columns="2">
+                    <rich:panel bodyClass="inpanelBody" header="IP Address Blink Control">
+                        <h:panelGrid columns="3" styleClass="gridhello" columnClasses="gridhellocolumn">
+                            <a4j:commandButton id="run"
+                                               value="#{blinkStatus.stopped?'Enable':'Disable'} Blinking"
+                                               reRender="out" action="#{blinkStatus.toggleRunState()}"/>
+                        </h:panelGrid>
+                        <br/>
+                        <h:panelGroup id="out">
+                            <h:outputText value="Stopped" rendered="#{blinkStatus.stopped}" styleClass="stopped"/>
+                            <h:outputText value="Running" rendered="#{not blinkStatus.stopped}" styleClass="running"/>
+                        </h:panelGroup>
+
+                    </rich:panel>
+                    <rich:panel bodyClass="inpanelBody" header="IP Address Blink Control">
+                        <h:panelGrid id="grid" columns="3">
+                            <h:outputText value="Polling Inactive" rendered="#{not blinkStatus.enabled}"></h:outputText>
+                            <h:outputText value="Polling Active" rendered="#{blinkStatus.enabled}"></h:outputText>
+
+                            <a4j:commandButton id="control" value="#{blinkStatus.enabled?'Stop':'Start'} Polling"
+                                               render="poll, grid">
+                                <a4j:param name="polling" value="#{!blinkStatus.enabled}"
+                                           assignTo="#{blinkStatus.enabled}"/>
+                            </a4j:commandButton>
+                            <h:outputText rendered="#{blinkStatus.hasError()}" value="#{blinkStatus.errorMsg}"
+                                          styleClass="error"/>
+                            <h:outputText rendered="#{!blinkStatus.hasError()}" value="#{blinkStatus.errorMsg}"/>
+                            <h:outputText value="IPAddress:"/>
+                            <h:outputText value=" #{blinkStatus.currentIPString}" styleClass="ipaddress"/>
+                            <h:outputText value=""/>
+                            <h:outputText value="__________"/>
+                            <h:outputText value="#{blinkStatus.currentDigit}" styleClass="ipaddress"/>
+                        </h:panelGrid>
+                    </rich:panel>
+                </h:panelGrid>
+            </rich:panel>
+        </h:form>
+        <face:message />
+    </ui:define>
+</ui:composition>
+</html>

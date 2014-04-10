@@ -66,4 +66,12 @@ Generated using mvn ant:ant
             </manifest>
         </jar>
     </target>
+    <target name="ActLedIntensityExample">
+        <java classname="pilab.ActLedIntensityExample">
+            <arg value="on"/>
+            <classpath>
+                <pathelement location="${maven.build.testOutputDir}"/>
+            </classpath>
+        </java>
+    </target>
 </project>

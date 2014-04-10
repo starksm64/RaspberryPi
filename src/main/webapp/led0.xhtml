@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html
+        PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:rich="http://richfaces.org/rich">
+    <ui:composition template="template/main.xhtml">
+        <ui:define name="title">
+            <title>Tutorial on the Raspberry Pi&reg; ACT LED</title>
+        </ui:define>
+        <ui:define name="content">
+            <h1>Background</h1>
+<p>The green ACT LED can be controlled from software. It's available as /sys/class/leds/led0/
+
+    The kernel LED driver, which controls led0, has "triggers" which let some other part of the kernel control the LED. The default trigger for the LED is 'mmc0', which makes it come on when the SD card is accessed.
+    <code>
+    root@raspberrypi:~# cat /sys/class/leds/led0/trigger
+    none [mmc0]
+    </code>
+
+    Here, the mmc0 trigger is selected. You can deactivate this as follows:
+    <code>
+    echo none >/sys/class/leds/led0/trigger
+    </code>
+    The LED can be turned on and off using the 'brightness' file. The minimum brightness is 0, and the maximum is 255 (specified in the 'max_brightness' file). However, as there is no hardware support for variable brightness, any value greater than 0 will turn the LED on.
+    <code>
+    echo 1 >/sys/class/leds/led0/brightness
+    echo 0 >/sys/class/leds/led0/brightness
+    </code>
+
+    Setting the brightness to 0 automatically sets the trigger to "none"
+
+    If you want the LED to go back to its default function:
+    <code>
+    echo mmc0 >/sys/class/leds/led0/trigger
+    </code>
+
+    As an aside, there are a couple of kernel modules you can load up (ledtrig_timer and ledtrig_heartbeat) which will flash the LED for you.
+
+    <code>
+    modprobe ledtrig_heartbeat
+    echo heartbeat >/sys/class/leds/led0/trigger
+    </code>
+    Taken from Raspberry Pi&reg; forum posting: <a href="http://www.raspberrypi.org/forums/viewtopic.php?f=31&t=12530">Can we control the on-board leds</a>
+</p>
+            <h1>ActLedIntensityExample</h1>
+            <p>The pilab.ActLedIntensityExample interfaces with the ACT LED using the /sys/class/leds/led0/brightness file.
+            You may run the program by
+            </p>
+            <h1>BlinkIpAddress</h1>
+        </ui:define>
+    </ui:composition>
+</html>
