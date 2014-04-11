@@ -18,6 +18,11 @@ address by observing this. To validate the IP address you have determined, attem
 
 The password is also jbosspi
 
+# Accessing the iotweb Application
+It takes a few minutes for the wildfly server to boot and fully deploy the sample web application, but when it is deployed, you can access it at:
+http://mypiaddr:8080/iotweb/index.xhtml
+
+There are links to the wildfly admin console in the applications Links menu as well.
 
 # Pi4J Project
 The [Pi4J](http://pi4j.com) is used as the means for integrating with the Raspberry Pi board from Java.
