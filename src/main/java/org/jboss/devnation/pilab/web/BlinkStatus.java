@@ -18,6 +18,7 @@ import org.jboss.devnation.pilab.ejb.BlinkMyIP;
 import javax.ejb.EJB;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Named;
+import java.io.IOException;
 
 /**
  * @author Scott Stark (sstark@redhat.com) (C) 2014 Red Hat Inc.
@@ -51,16 +52,16 @@ public class BlinkStatus {
          msg = exception.getLocalizedMessage();
       return msg;
    }
-   public void toggleRunState() {
+   public void toggleRunState() throws IOException {
       if(isStopped())
          start();
       else
          stop();
    }
-   public void start() {
+   public void start() throws IOException {
       blinkMyIP.start();
    }
-   public void stop() {
+   public void stop() throws IOException {
       blinkMyIP.stop();
    }
 
@@ -76,7 +77,7 @@ public class BlinkStatus {
       tmp.setLength(tmp.length()-1);
       return tmp.toString();
    }
-   public String getCurrentDigit() {
+   public String getCurrentDigit() throws IOException {
       char[] addr = blinkMyIP.getFullIpAddress();
       int index = blinkMyIP.getFullIpAddressIndex();
       StringBuilder tmp = new StringBuilder();

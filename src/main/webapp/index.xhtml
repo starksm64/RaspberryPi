@@ -38,13 +38,20 @@
                         you can explore the installation, check on the Wildfly server status, use yum to install
                         additional packages, etc. The Wildfly installation is located in the ~jbosspi home directory.
                         You can control the server using the service command to run the /etc/init.d/wildfly script:
+                        </p>
                         <code>
                             [jbosspi@raspi ~]$ service wildfly
                             Usage: /etc/init.d/wildfly {start|stop|status|restart}
                             [jbosspi@raspi ~]$ service wildfly status
                             wildfly is running (pid 4450)
                         </code>
-                    </p>
+                    <p>The github project for the Hacknight application on the Raspberry Pi has been cloned
+                    into the ~jbosspi home directory. Building on the Pi with maven is rather slow, so what I
+                    typically do is build on my laptap, and then scp the war over:</p>
+                    <code>
+                        scp target/iotweb.war root@mypi:/home/jbosspi/wildfly-8.0.0.Final/standalone/deployments
+                    </code>
+
                 </rich:accordionItem>
             </rich:accordion>
         </h:form>

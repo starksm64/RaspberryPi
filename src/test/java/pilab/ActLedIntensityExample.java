@@ -35,10 +35,13 @@ public class ActLedIntensityExample {
       }
       boolean on = args[0].equalsIgnoreCase("on");
       FileOutputStream led0 = new FileOutputStream(LED0);
-      if(on)
+      if(on) {
          led0.write(Character.forDigit(1, 10));
-      else
+         System.out.printf("Wrote 1 to turn led on\n");
+      } else {
          led0.write(Character.forDigit(0, 10));
+         System.out.printf("Wrote 0 to turn led on\n");
+      }
       led0.close();
    }
 }

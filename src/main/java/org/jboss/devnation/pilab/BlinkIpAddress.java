@@ -15,26 +15,58 @@ package org.jboss.devnation.pilab;
 
 import org.jboss.logging.Logger;
 
+import java.io.File;
 import java.io.FileOutputStream;
+import java.io.RandomAccessFile;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.util.Enumeration;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 /**
  * @author Scott Stark (sstark@redhat.com) (C) 2014 Red Hat Inc.
  */
 public class BlinkIpAddress implements Runnable {
    private static Logger logger = Logger.getLogger(BlinkIpAddress.class);
+   /** Path to file system trigger for stopping the blinking */
+   static final String STOP = "/var/lib/blink-stop";
+   /** Path to file system trigger for stopping the blinking */
+   static final String START = "/var/lib/blink-start";
+   /** Path to file system trigger for shutting down the blinking */
+   static final String SHUTDOWN = "/var/lib/blink-shutdown";
+   /** Path to file system trigger for shutting down the blinking */
+   static final String INDEX = "/var/lib/blink-index";
+
    /** Path to file system control of LED0 */
    private static final String LED0 = "/sys/class/leds/led0/brightness";
    private FileOutputStream led0;
    private int iterations = -1;
    private char[] fullIpAddress;
+   private String fullIpAddressString;
    private String macaddr;
    private int fullIpAddressIndex;
    private Exception errorState;
    private volatile boolean stopped;
+
+   public static String getStop() {
+      return STOP;
+   }
+
+   public static String getStart() {
+      return START;
+   }
+
+   public static String getShutdown() {
+      return SHUTDOWN;
+   }
+
+   public static String getIndex() {
+      return INDEX;
+   }
 
    public BlinkIpAddress() {
       this(-1);
@@ -78,11 +110,7 @@ public class BlinkIpAddress implements Runnable {
       }
    }
 
-   /**
-    * Run the blink sequence on LED0(ACT)
-    * @throws Exception
-    */
-   public void start() throws Exception {
+   public void init() throws SocketException {
       Enumeration<NetworkInterface> ifaces = NetworkInterface.getNetworkInterfaces();
       NetworkInterface nonloopback = null;
       // Choose the first non-loopback interface
@@ -139,24 +167,32 @@ public class BlinkIpAddress implements Runnable {
          fullyPaddedAddress.append('.');
       }
       fullyPaddedAddress.setLength(fullyPaddedAddress.length()-1);
+      fullIpAddressString = fullyPaddedAddress.toString();
+   }
+
+   /**
+    * Run the blink sequence on LED0(ACT)
+    * @throws Exception
+    */
+   public void start() throws Exception {
+      logger.debugf(new Exception("Trace"), "start called from here\n");
 
       // Begin flashing the address code
       led0 = new FileOutputStream(LED0);
       int count = 0;
       while(!stopped && (count < iterations || iterations < 0)) {
-         logger.infof("Starting %s display\n", fullyPaddedAddress.toString());
+         logger.infof("Starting %s display\n", fullIpAddressString);
          display_start();
          fullIpAddressIndex = 0;
-         for(int i = 0; i < 4; i ++) {
-            for(int j = 0; j < 3; j ++) {
-               logger.infof("%c\n", octets[i][j]);
-               if(octets[i][j] == '0')
-                  display_zero();
-               else
-                  display_blink(octets[i][j], 500, 500);
-               Thread.sleep(1000);
-               fullIpAddressIndex ++;
-            }
+         while(fullIpAddressIndex < fullIpAddress.length) {
+            char c = fullIpAddress[fullIpAddressIndex];
+            logger.infof("%c\n", c);
+            if(c == '0')
+               display_zero();
+            else
+               display_blink(c, 500, 500);
+            Thread.sleep(1000);
+            fullIpAddressIndex ++;
          }
          logger.infof("------------\n");
       }
@@ -207,6 +243,77 @@ public class BlinkIpAddress implements Runnable {
          Thread.sleep(delay);
          led0.write(Character.forDigit(0, 10));
        }
+   }
 
+   private static void deleteOrExit(File trigger) {
+      if(trigger.exists()) {
+         System.err.printf("%s exists, attempting to delete...", trigger.getAbsolutePath());
+         boolean removed = trigger.delete();
+         System.err.printf("%s\n", (removed ? "Success" : "Failed"));
+         if(!removed) {
+            System.exit(1);
+         }
+      }
+   }
+   /**
+    * Allow this to run standalone.
+    * @param args
+    */
+   public static void main(String[] args) throws Exception {
+      ExecutorService service = Executors.newFixedThreadPool(1);
+      BlinkIpAddress blink = new BlinkIpAddress();
+      blink.init();
+      Future blinkFuture = service.submit(blink);
+
+      // Validate the filesystem triggers
+      File shutdown = new File(SHUTDOWN);
+      deleteOrExit(shutdown);
+      File stop = new File(STOP);
+      deleteOrExit(stop);
+      File start = new File(START);
+      deleteOrExit(start);
+      RandomAccessFile index = new RandomAccessFile(INDEX, "rwd");
+
+      // Loop, monitoring the /var/local/* file system triggers
+      while(shutdown.exists() == false) {
+         try {
+            Thread.sleep(500);
+            index.writeInt(blink.getFullIpAddressIndex());
+            index.seek(0);
+
+            // Check for a stop trigger
+            if(stop.exists()) {
+               System.out.printf("STOP marker seen, cancelling blinking\n");
+               deleteOrExit(stop);
+               if(blinkFuture != null)
+                  blinkFuture.cancel(true);
+               else
+                  System.out.printf("Ignored, no blink task exists\n");
+               blinkFuture = null;
+            }
+            // Check for a shutdown trigger
+            if(shutdown.exists()) {
+               System.out.printf("SHUTDOWN marker seen, exiting\n");
+               break;
+            }
+            // Check for a start trigger
+            if(start.exists()) {
+               System.out.printf("START marker seen, resuming blinking\n");
+               deleteOrExit(start);
+               if(blinkFuture == null)
+                  blinkFuture = service.submit(blink);
+               else
+                  System.out.printf("Ignored, blink task exists\n");
+            }
+         } catch (Exception e) {
+            System.err.printf("Exiting on Exception, msg=%s\n", e.getMessage());
+            break;
+         }
+      }
+      System.out.printf("Shutting down...\n");
+      if(blinkFuture != null)
+         blinkFuture.cancel(true);
+      service.shutdownNow();
+      shutdown.delete();
    }
 }

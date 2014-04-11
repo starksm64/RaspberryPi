@@ -11,7 +11,27 @@
     </ui:define>
     <ui:define name="content">
         <h1>Background</h1>
+        <p>
+        PiGlow is a small add on board for the Raspberry Pi that provides 18 individually controllable LEDs.
+        PiGlow is based on an IC that communicates via i2c protocol. You need to enable i2c communication on your
+        Raspberry Pi for it to work. If you do an:</p>
+<pre>
+    [jbosspi@raspi ~]$ lsmod
+    Module                  Size  Used by
+    nls_ascii               3501  1
+    bnep                   10630  2
+    bluetooth             190215  7 bnep
+    rfkill                 17454  2 bluetooth
+    i2c_smbus               2717  0
+    autofs4                23820  3
+</pre>
+      <p>and you don't see the  i2c_smbus module as shown here, then run the following modprobe command:</p>
+<pre>
+    [jbosspi@raspi ~]$ sudo modprobe -v i2c_smbus
+    insmod /lib/modules/3.6.11/kernel/drivers/i2c/i2c-smbus.ko
+</pre>
 
+        <p></p>
     </ui:define>
 </ui:composition>
 </html>

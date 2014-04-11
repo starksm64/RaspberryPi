@@ -18,11 +18,13 @@ import org.jboss.logging.Logger;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import javax.annotation.Resource;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
-import javax.enterprise.concurrent.ManagedExecutorService;
-import java.util.concurrent.Future;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.net.SocketException;
 
 /**
  * @author Scott Stark (sstark@redhat.com) (C) 2014 Red Hat Inc.
@@ -32,20 +34,23 @@ import java.util.concurrent.Future;
 public class BlinkMyIP {
    private static Logger logger = Logger.getLogger(BlinkMyIP.class);
 
+   /* Old in process BlinkIpAddress usage
    @Resource(name="concurrent/LongRunningTasksExecutor")
    private ManagedExecutorService executorService;
    private Future blinkTask;
+   */
+   /** File system based usage */
    private BlinkIpAddress blinkIpAddress;
 
    @PostConstruct
-   private void init() {
+   private void init() throws SocketException {
       logger.info("Initializing IP Address blinking");
       blinkIpAddress = new BlinkIpAddress();
-      blinkTask = executorService.submit(blinkIpAddress);
+      blinkIpAddress.init();
    }
+
    @PreDestroy
    private void destroy() {
-      stop();
    }
 
    public String getMac() {
@@ -56,8 +61,10 @@ public class BlinkMyIP {
       return blinkIpAddress.getFullIpAddress();
    }
 
-   public int getFullIpAddressIndex() {
-      return blinkIpAddress.getFullIpAddressIndex();
+   public int getFullIpAddressIndex() throws IOException {
+      RandomAccessFile indexFile = new RandomAccessFile(BlinkIpAddress.getIndex(), "r");
+      int index = indexFile.readInt();
+      return index;
    }
    public Exception getErrorState() {
       return blinkIpAddress.getErrorState();
@@ -66,19 +73,14 @@ public class BlinkMyIP {
       return blinkIpAddress.isStopped();
    }
 
-   public void start() {
+   public void start() throws IOException {
       logger.info("Starting IP Address blinking");
-      if(blinkTask != null) {
-         stop();
-      }
-      blinkTask = executorService.submit(blinkIpAddress);
+      File start = new File(BlinkIpAddress.getStart());
+      start.createNewFile();
    }
-   public void stop() {
-      if(blinkTask != null) {
-         logger.info("Stopping IP Address blinking");
-         blinkIpAddress.stop();
-         blinkTask.cancel(true);
-         blinkTask = null;
-      }
+   public void stop() throws IOException {
+      logger.info("Stopping IP Address blinking");
+      File stop = new File(BlinkIpAddress.getStop());
+      stop.createNewFile();
    }
 }

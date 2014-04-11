@@ -2,31 +2,24 @@
 
 Raspberry Pi integration work
 
+# Booting of the pidora image
+Place the SD card with the pidora image you have into the Raspberry Pi's SD card slot, plug the power into the micro USB port, and watch the LET labeled ACT on the board. During the boot, it will flash chaotically as an indication of read activity from the SD card. After a minute or so, the flashing will become very regular. This is a coded represtion of the Pi's IP address. The pattern is, as an interval starts:
+
+1. the led flashes quickly for about 10 secs, followed by 4 secs off.
+2. The for each digit of the ip address it will:
+   a. flash once up to the value of the digit, followed by about a 1 sec delay.
+   b. if the digit is 0, it flashes quickly for a couple of secs
+followed by about a 1 sec delay.
+
+Then the cycle repeats itself. See if you can determine you Pi's IP
+address by observing this. To validate the IP address you have determined, attempt to SSH into your Pi using this address and the login username jbosspi:
+
+`ssh -l jbosspi myip`
+
+The password is also jbosspi
+
+
 # Pi4J Project
 The [Pi4J](http://pi4j.com) is used as the means for integrating with the Raspberry Pi board from Java.
 
-# Configuration of the pidora image
-I had to do the following to install the neccessary dependencies for this RaspberryPi project
-
-1. Install git using `yum install git`
-2. Install maven. Note that I could not use the yum install maven command as this fails with many dependency problems. Just download maven from [http://apache.mesi.com.ar/maven/maven-3/3.0.5/binaries/apache-maven-3.0.5-bin.zip](http://apache.mesi.com.ar/maven/maven-3/3.0.5/binaries/apache-maven-3.0.5-bin.zip), unzip and put its bin directory in your PATH.
-3. Build and install the wiringPi native project required by the pi4j project:
-
-    `git clone git://git.drogon.net/wiringPi`
-
-    `cd wiringPi`
-
-	`/build`
-
-4. Create links from the /usr/bin/vc* command to 
-
-	`sudo mkdir -p /opt/vc/bin`
-
-	`cd /opt/vc/bin`
-
-	`sudo ln -s /usr/bin/vcgencmd`
-
-	`sudo ln -s /usr/bin/vcdbg`
-
-	`sudo ln -s /usr/bin/vchiq_test`
 	

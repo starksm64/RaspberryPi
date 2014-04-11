@@ -29,18 +29,27 @@
                         <h:outputText value="Links"/>
                     </h:panelGrid>
                 </f:facet>
-                <rich:menuItem onclick="document.location.href='http://raspberrypi.org/'">
+                <rich:menuItem onclick="document.location.href='http://#{request.localAddr}:9990/console/'"
+                        icon="images/wildfly_32x32.png">
+                    <h:outputLink value="http://#{request.localAddr}:9990/console/">
+                        <h:outputText value="Wildfly Admin Console"></h:outputText>
+                    </h:outputLink>
+                </rich:menuItem>
+                <rich:menuItem onclick="document.location.href='http://raspberrypi.org/'"
+                               icon="images/Raspi_32.png">
                     <h:outputLink value="http://raspberrypi.org">
                         <h:outputText value="Raspberry Pi Home"></h:outputText>
                     </h:outputLink>
                 </rich:menuItem>
 
-                <rich:menuItem onclick="document.location.href='http://pi4j.com'">
+                <rich:menuItem onclick="document.location.href='http://pi4j.com'"
+                               icon="images/pi4j_32.png">
                     <h:outputLink value="http://pi4j.com">
                         <h:outputText value="Pi4j Home"></h:outputText>
                     </h:outputLink>
                 </rich:menuItem>
-                <rich:menuItem onclick="document.location.href='http://wildfly.org'">
+                <rich:menuItem onclick="document.location.href='http://wildfly.org'"
+                               icon="images/wildfly_32x32.png">
                     <h:outputLink value="http://pi4j.com">
                         <h:outputText value="Wildfly.org Home"></h:outputText>
                     </h:outputLink>

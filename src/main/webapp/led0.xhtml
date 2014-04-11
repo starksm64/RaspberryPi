@@ -10,45 +10,68 @@
             <title>Tutorial on the Raspberry Pi&reg; ACT LED</title>
         </ui:define>
         <ui:define name="content">
+            <h1>Before You Begin</h1>
+            <p>Note: disable the BlinkIPAddress behavior before interacting with the ACT LED, or you won't
+            be able to see your changes. Go the the <a href="ipaddr.xhtml">IP Address Page</a> and
+            click on the <span style="color: #ff0000">Disable Blinking</span> button.</p>
+
             <h1>Background</h1>
 <p>The green ACT LED can be controlled from software. It's available as /sys/class/leds/led0/
 
     The kernel LED driver, which controls led0, has "triggers" which let some other part of the kernel control the LED. The default trigger for the LED is 'mmc0', which makes it come on when the SD card is accessed.
-    <code>
+</p>
+    <pre>
     root@raspberrypi:~# cat /sys/class/leds/led0/trigger
     none [mmc0]
-    </code>
-
-    Here, the mmc0 trigger is selected. You can deactivate this as follows:
-    <code>
+    </pre>
+<p>Here, the mmc0 trigger is selected. You can deactivate this as follows:</p>
+    <pre>
     echo none >/sys/class/leds/led0/trigger
-    </code>
-    The LED can be turned on and off using the 'brightness' file. The minimum brightness is 0, and the maximum is 255 (specified in the 'max_brightness' file). However, as there is no hardware support for variable brightness, any value greater than 0 will turn the LED on.
-    <code>
+    </pre>
+<p>The LED can be turned on and off using the 'brightness' file. The minimum brightness is 0, and the maximum is 255
+    (specified in the 'max_brightness' file). However, as there is no hardware support for variable brightness, any
+    value greater than 0 will turn the LED on.
+</p>
+    <pre>
     echo 1 >/sys/class/leds/led0/brightness
     echo 0 >/sys/class/leds/led0/brightness
-    </code>
+    </pre>
 
-    Setting the brightness to 0 automatically sets the trigger to "none"
-
-    If you want the LED to go back to its default function:
-    <code>
+<p>Setting the brightness to 0 automatically sets the trigger to "none"
+    If you want the LED to go back to its default function:</p>
+    <pre>
     echo mmc0 >/sys/class/leds/led0/trigger
-    </code>
-
+    </pre>
+<p>
     As an aside, there are a couple of kernel modules you can load up (ledtrig_timer and ledtrig_heartbeat) which will flash the LED for you.
-
-    <code>
-    modprobe ledtrig_heartbeat
-    echo heartbeat >/sys/class/leds/led0/trigger
-    </code>
-    Taken from Raspberry Pi&reg; forum posting: <a href="http://www.raspberrypi.org/forums/viewtopic.php?f=31&t=12530">Can we control the on-board leds</a>
 </p>
+    <pre>
+    modprobe ledtrig_heartbeat<br/>
+    echo heartbeat >/sys/class/leds/led0/trigger
+    </pre>
+<p>Taken from Raspberry Pi&reg; forum posting: <a href="http://www.raspberrypi.org/forums/viewtopic.php?f%3D31%26t%3D12530">Can we control the on-board leds</a></p>
             <h1>ActLedIntensityExample</h1>
             <p>The pilab.ActLedIntensityExample interfaces with the ACT LED using the /sys/class/leds/led0/brightness file.
-            You may run the program by
+            You may run the program by either using ant and the ActLedIntensityExample, or java as shown here:
             </p>
-            <h1>BlinkIpAddress</h1>
+<pre>
+[jbosspi@raspi RaspberryPi]$ sudo /home/jbosspi/apache-ant-1.9.3/bin/ant ActLedIntensityExample
+Buildfile: /home/jbosspi/RaspberryPi/build.xml
+
+ActLedIntensityExample:
+     [java] Wrote 1 to turn led on
+
+BUILD SUCCESSFUL
+Total time: 15 seconds
+[jbosspi@raspi RaspberryPi]$ sudo java -cp target/test-classes pilab.ActLedIntensityExample on
+Wrote 1 to turn led on
+</pre>
+        <blockquote>Note: if you forget to use sudo to run with root permissions, you will see a FileNotFoundException
+        due to not being able to read the /sys/class/leds/led0/brightness file.</blockquote>
+
+        <h1>BlinkIpAddress</h1>
+        <p>The application that runs when Wildfly boots to display the Pis IP address on the ACT led uses
+        the same filesystem access with timings .</p>
         </ui:define>
     </ui:composition>
 </html>
