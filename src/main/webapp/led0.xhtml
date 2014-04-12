@@ -13,7 +13,12 @@
             <h1>Before You Begin</h1>
             <p>Note: disable the BlinkIPAddress behavior before interacting with the ACT LED, or you won't
             be able to see your changes. Go the the <a href="ipaddr.xhtml">IP Address Page</a> and
-            click on the <span style="color: #ff0000">Disable Blinking</span> button.</p>
+            click on the <span style="color: #ff0000">Disable Blinking</span> button, or simply touch
+            the following marker file:
+<pre>
+    sudo touch /var/lib/blink-stop
+</pre>
+            </p>
 
             <h1>Background</h1>
 <p>The green ACT LED can be controlled from software. It's available as /sys/class/leds/led0/
@@ -71,7 +76,8 @@ Wrote 1 to turn led on
 
         <h1>BlinkIpAddress</h1>
         <p>The application that runs when Wildfly boots to display the Pis IP address on the ACT led uses
-        the same filesystem access with timings .</p>
+        the same filesystem access with timing to control how quickly the LED blinks. See the org.jboss.devnation.pilab.BlinkIpAddress
+        class at src/main/java/org/jboss/devnation/pilab/BlinkIpAddress.java of the project.</p>
         </ui:define>
     </ui:composition>
 </html>

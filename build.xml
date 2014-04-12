@@ -85,4 +85,13 @@ Generated using mvn ant:ant
             </classpath>
         </java>
     </target>
+    <target name="PiGlow">
+        <java classname="pilab.PiGlowTests">
+            <arg value="on"/>
+            <classpath>
+                <path refid="build.test.classpath"/>
+                <pathelement location="${maven.build.testOutputDir}"/>
+            </classpath>
+        </java>
+    </target>
 </project>
