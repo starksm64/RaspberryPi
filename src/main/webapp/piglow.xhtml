@@ -12,7 +12,7 @@
     <ui:define name="content">
         <h1>Background</h1>
         <p>
-        PiGlow is a small add on board for the Raspberry Pi that provides 18 individually controllable LEDs.
+        <img src="images/piglow-498x498.jpg"> PiGlow is a small add on board for the Raspberry Pi that provides 18 individually controllable LEDs.
         PiGlow is based on an IC that communicates via i2c protocol. You need to enable i2c communication on your
         Raspberry Pi for it to work. If you do an:</p>
 <pre>
@@ -25,13 +25,67 @@
     i2c_smbus               2717  0
     autofs4                23820  3
 </pre>
-      <p>and you don't see the  i2c_smbus module as shown here, then run the following modprobe command:</p>
+      <p>and you don't see the i2c_smbus module as shown here, then run the following modprobe command:</p>
 <pre>
     [jbosspi@raspi ~]$ sudo modprobe -v i2c_smbus
     insmod /lib/modules/3.6.11/kernel/drivers/i2c/i2c-smbus.ko
 </pre>
 
         <p></p>
+        <h1>PiGlowTests</h1>
+        <p>The pilab.PiGlowTests program is a starting point for exploring access the PiGlow device on the
+        I2C bus. Be careful when looking at the LEDs as they can get quite bright at maximum intensity. Run this as root using sudo and ant as follows:
+        </p>
+<pre>
+[jbosspi@raspi RaspberryPi]$ sudo ~jbosspi/apache-ant-1.9.3/bin/ant PiGlow
+Buildfile: /home/jbosspi/RaspberryPi/build.xml
+
+PiGlow:
+    [java] Connected to bus OK!
+    [java] Connected to device OK!
+    [java] set_leds(0)
+...
+    [java] set_leds(254)
+    [java] set_arm(0,0)
+...
+    [java] set_arm(0,254)
+    [java] set_arm(1,0)
+...
+    [java] set_arm(1,254)
+    [java] set_arm(2,0)
+...
+    [java] set_arm(2,254)
+    set_led(6,0xff)
+	set_led(7,0xff)
+	set_led(8,0xff)
+	set_led(5,0xff)
+	set_led(4,0xff)
+	set_led(9,0xff)
+	set_led(17,0xff)
+	set_led(16,0xff)
+	set_led(15,0xff)
+	set_led(13,0xff)
+	set_led(11,0xff)
+	set_led(10,0xff)
+	set_led(0,0xff)
+	set_led(1,0xff)
+	set_led(2,0xff)
+	set_led(3,0xff)
+	set_led(14,0xff)
+	set_led(12,0xff)
+
+BUILD SUCCESSFUL
+Total time: 1 minute 23 seconds
+</pre>
+        <p>Alternatively, for a little faster startup, one can run with java by specfiying the full classpath as follows:</p>
+<pre>
+    [jbosspi@raspi RaspberryPi]$ sudo java -cp ~/.m2/repository/com/pi4j/pi4j-core/0.0.5/pi4j-core-0.0.5.jar:target/test-classes pilab.PiGlowTests
+    ...
+</pre>
+     <p>This program first ramps the intensity of all leds, then ramps the intensity of each of the
+     three spiral arms, and then iterates through each led along the spiral arms. Experiment with modifying the program
+         to display different patterns.
+     </p>
     </ui:define>
 </ui:composition>
 </html>
