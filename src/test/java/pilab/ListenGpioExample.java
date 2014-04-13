@@ -37,7 +37,6 @@ import com.pi4j.io.gpio.PinPullResistance;
 import com.pi4j.io.gpio.RaspiPin;
 import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
-import org.junit.Test;
 
 /**
  * This example code demonstrates how to setup a listener
@@ -47,8 +46,7 @@ import org.junit.Test;
  */
 public class ListenGpioExample {
 
-   @Test
-   public void main() throws InterruptedException {
+   public static void main(String[] args) throws InterruptedException {
         System.out.println("<--Pi4J--> GPIO Listen Example ... started.");
 
         // create gpio controller

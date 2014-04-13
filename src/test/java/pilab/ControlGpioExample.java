@@ -33,7 +33,6 @@ import com.pi4j.io.gpio.GpioFactory;
 import com.pi4j.io.gpio.GpioPinDigitalOutput;
 import com.pi4j.io.gpio.PinState;
 import com.pi4j.io.gpio.RaspiPin;
-import org.junit.Test;
 
 /**
  * This example code demonstrates how to perform simple state
@@ -43,8 +42,7 @@ import org.junit.Test;
  */
 public class ControlGpioExample {
 
-   @Test
-   public void main() throws InterruptedException {
+   public static void main(String[] args) throws InterruptedException {
 
         System.out.println("<--Pi4J--> GPIO Control Example ... started.");
 

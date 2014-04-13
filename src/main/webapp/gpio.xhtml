@@ -18,8 +18,25 @@
         Taken from: <a href="http://pi4j.com/example/control.html">Simple GPIO Control using Pi4J</a>
         <h2>Wiring Diagram</h2>
         The following diagram shows wiring the GPIO 1 pin to a LED anode with a resistor in between, and GND to the cathode. The Pi board labels P1, so P12 which is GPIO 1 is the 6th pin on the outside edge of the header.
-        <img src="images/gpio-control-example.png" />
-        
+        <img src="images/gpio-control-example.png" /><br/>
+        Once you have your Pi wired as shown, run the pilab.ControlGpioExample as follows, and you should see the LED flash on/off as indicated by the terminal output:
+<pre>
+[jbosspi@raspi RaspberryPi]$ sudo ~/apache-ant-1.9.3/bin/ant ControlGpioExample
+Buildfile: /home/jbosspi/RaspberryPi/build.xml
+
+ControlGpioExample:
+     [java] <--Pi4J--> GPIO Control Example ... started.
+wiringPiSetup: mmap failed: No such file or directory
+     [java] --> GPIO state should be: ON
+     [java] --> GPIO state should be: OFF
+     [java] --> GPIO state should be: ON
+     [java] --> GPIO state should be: OFF
+     [java] --> GPIO state should be: ON for only 1 second
+
+BUILD SUCCESSFUL
+Total time: 38 seconds
+</pre>
+		<p>The source for the pilab.ControlGpioExample program is src/test/java/pilab/ControlGpioExample.java</p>
         <h1>pilab.ListenGpioExample</h1>
         Taken from: <a href="http://pi4j.com/example/listener.html">GPIO State Listener Example using Pi4J</a>
         <h1>pilab.TriggerGpioExample</h1>
