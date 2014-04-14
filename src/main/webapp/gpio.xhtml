@@ -14,6 +14,12 @@
         <p>The GPIO pins on a Raspberry Pi are a great way to interface physical devices like buttons and LEDs with the little Linux processor. In these tutorials, we will be wiring up LEDs to the GPIO pins. In the wiring diagrams shown, note that a LED has one leg that is longer
 	        than the other(the anode+), and the wiring of the legs must match that of the diagram to avoid burning out the LED.
         </p>
+        <blockquote>Note the version of pi4j is 0.0.5sms which is a hack I put together to address some issues with the
+            publically available 0.0.5 version not having a native libpi4j.so that worked with the current wiringPi
+            native library build. The pi4j source used to do this hack is located in the ~jbosspi/pi4j directory. It
+            is still a hack to build it as I fudged some manual steps to get the libpi4j.so into the pi4j-core-0.0.5sms.jar.
+            I'll come up with a proper patch to build for pidora in the future.
+        </blockquote>
         <h1>pilab.ControlGpioExample</h1>
         Taken from: <a href="http://pi4j.com/example/control.html">Simple GPIO Control using Pi4J</a>
         <h2>Wiring Diagram</h2>
@@ -42,6 +48,26 @@ Total time: 38 seconds
         <p>The following example demonstrates how to setup a listener for GPIO pin state changes on the Raspberry Pi. This listener implementation is far more efficient than constantly polling and querying for the the GPIO pin state. The listener implementation is based on GPIO hardware interrupts not state polling.</p>
         <h2>Wiring Diagram</h2>
         <p>The following wiring diagram hows <img src="images/gpio-listener-example.png" /></p>
+<pre>
+[jbosspi@raspi RaspberryPi]$ sudo ~/apache-ant-1.9.3/bin/ant ListenGpioExample
+    Buildfile: /home/jbosspi/RaspberryPi/build.xml
+
+    ListenGpioExample:
+         [java] <--Pi4J--> GPIO Listen Example ... started.
+    wiringPi: wiringPiSetup called
+    piboardRev: Revision string: Revision	: 000e
+    piboardRev: lastChar is: 'e' (101, 0x65)
+    piBoardRev: Returning revision: 2
+         [java]  ... complete the GPIO #02 circuit and see the listener feedback here in the console.
+         [java]  --> GPIO PIN STATE CHANGE: "GPIO 2" &lt;GPIO 2&gt; = HIGH
+         [java]  --> GPIO PIN STATE CHANGE: "GPIO 2" &lt;GPIO 2&gt; = LOW
+         [java]  --> GPIO PIN STATE CHANGE: "GPIO 2" &lt;GPIO 2&gt; = HIGH
+         [java]  --> GPIO PIN STATE CHANGE: "GPIO 2" &lt;GPIO 2&gt; = LOW
+^C[jbosspi@raspi RaspberryPi]$
+</pre>
+        In the example output above, I pushed the momemtary button twice so that the GPIO pin 2 state cycles from
+        low to high twice.
+
         <h1>pilab.TriggerGpioExample</h1>
         Taken from: <a href="http://pi4j.com/example/trigger.html">GPIO Triggers Example using Pi4J</a>
     </ui:define>
