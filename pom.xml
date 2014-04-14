@@ -33,7 +33,7 @@
         <maven.compiler.target>1.7</maven.compiler.target>
         <maven.compiler.source>1.7</maven.compiler.source>
         <!-- Raspberry Pi related versions -->
-        <version.pi4j>0.0.5</version.pi4j>
+        <version.pi4j>0.0.5sms</version.pi4j>
     </properties>
 
     <dependencyManagement>
