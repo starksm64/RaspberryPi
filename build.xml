@@ -103,6 +103,11 @@ Generated using mvn ant:ant
     </target>
     <target name="ListenGpioExample">
         <java classname="pilab.ListenGpioExample">
+            <!--
+            <sysproperty key="pi4j.debug" value="1" />
+            -->
+            <!-- Force the hard-float library as the detection does not work on pidora -->
+            <sysproperty key="pi4j.armhf" value="1" />
             <classpath>
                 <path refid="build.test.classpath"/>
                 <pathelement location="${maven.build.testOutputDir}"/>
@@ -111,6 +116,8 @@ Generated using mvn ant:ant
     </target>
     <target name="TriggerGpioExample">
         <java classname="pilab.TriggerGpioExample">
+            <!-- Force the hard-float library as the detection does not work on pidora -->
+            <sysproperty key="pi4j.armhf" value="1" />
             <classpath>
                 <path refid="build.test.classpath"/>
                 <pathelement location="${maven.build.testOutputDir}"/>
