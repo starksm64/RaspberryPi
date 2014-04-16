@@ -45,6 +45,7 @@ public class AddressSender {
 
       AddressSender sender = new AddressSender();
       sender.initNetwork();
+      sender.running = true;
       if(args.length > 0) {
          int port = Integer.parseInt(args[1]);
          sender.initNetwork(args[0], port);
@@ -72,7 +73,7 @@ public class AddressSender {
             doSocket();
          else
             doBroadcast();
-      } catch (Exception e) {
+      } catch (Throwable e) {
          logger.warn("Failed to run address send", e);
       }
    }
@@ -103,7 +104,7 @@ public class AddressSender {
     * @throws Exception
     */
    private void doBroadcast() throws Exception {
-      logger.info("Begin doBroadcast()");
+      logger.infof("Begin doBroadcast(%s)", running);
       byte[] recvBuf = new byte[15000];
       DatagramSocket ds = new DatagramSocket();
       ds.setBroadcast(true);
@@ -138,7 +139,7 @@ public class AddressSender {
          String message = dis.readUTF();
          int myID = dis.readInt();
          logger.infof("%s, %d\n", message, myID);
-         Thread.sleep(5000);
+         Thread.sleep(10000);
       }
       ds.close();
       logger.info("End doBroadcast()");

@@ -26,7 +26,7 @@ Generated using mvn ant:ant
     <target name="blink-service.jar"
             description="A ruunable jar that contains the BlinkIpAddress for use as a standalone service">
         <jar basedir="${maven.build.outputDir}" jarfile="target/blink-service.jar">
-            <include name="org/jboss/devnation/pilab/AddressSender*" />
+            <include name="org/jboss/devnation/pilab/Address*" />
             <include name="org/jboss/devnation/pilab/BlinkIpAddress*" />
             <include name="org/jboss/devnation/pilab/Utility*" />
             <zipfileset includes="**/*.class" src="${maven.repo.local}/org/jboss/logging/jboss-logging/3.1.4.GA/jboss-logging-3.1.4.GA.jar"/>
@@ -72,7 +72,7 @@ Generated using mvn ant:ant
         <java classname="org.jboss.devnation.pilab.AddressSender">
             <arg value="1"/>
             <classpath>
-                <pathelement location="${maven.build.testOutputDir}"/>
+                <pathelement location="${maven.build.outputDir}"/>
             </classpath>
         </java>
     </target>

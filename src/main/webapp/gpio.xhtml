@@ -9,6 +9,7 @@
     <ui:define name="title">
         <title>Tutorial on the Raspberry Pi&reg; GPIO Pins</title>
     </ui:define>
+    <ui:include src="resources/css/apache-maven-fluido-1.3.0.min.css" />
     <ui:define name="content">
         <h1>Background</h1>
         <p>The GPIO pins on a Raspberry Pi are a great way to interface physical devices like buttons and LEDs with the little Linux processor. In these tutorials, we will be wiring up LEDs to the GPIO pins. In the wiring diagrams shown, note that a LED has one leg that is longer
@@ -24,20 +25,20 @@
         Taken from: <a href="http://pi4j.com/example/control.html">Simple GPIO Control using Pi4J</a>
         <h2>Wiring Diagram</h2>
         The following diagram shows wiring the GPIO 1 pin to a LED anode with a resistor in between, and GND to the cathode. The Pi board labels P1, so P12 which is GPIO 1 is the 6th pin on the outside edge of the header.
-        <img src="images/gpio-control-example.png" /><br/>
+        <img alt="gpio-control-example" src="images/gpio-control-example.png" /><br/>
         Once you have your Pi wired as shown, run the pilab.ControlGpioExample as follows, and you should see the LED flash on/off as indicated by the terminal output:
 <pre>
 [jbosspi@raspi RaspberryPi]$ sudo ~/apache-ant-1.9.3/bin/ant ControlGpioExample
 Buildfile: /home/jbosspi/RaspberryPi/build.xml
 
 ControlGpioExample:
-     [java] <--Pi4J--> GPIO Control Example ... started.
+     [java] &lt;Pi4J&gt; GPIO Control Example ... started.
 wiringPiSetup: mmap failed: No such file or directory
-     [java] --> GPIO state should be: ON
-     [java] --> GPIO state should be: OFF
-     [java] --> GPIO state should be: ON
-     [java] --> GPIO state should be: OFF
-     [java] --> GPIO state should be: ON for only 1 second
+     [java] -&gt; GPIO state should be: ON
+     [java] -&gt; GPIO state should be: OFF
+     [java] -&gt; GPIO state should be: ON
+     [java] -&gt; GPIO state should be: OFF
+     [java] -&gt; GPIO state should be: ON for only 1 second
 
 BUILD SUCCESSFUL
 Total time: 38 seconds
@@ -47,29 +48,38 @@ Total time: 38 seconds
         Taken from: <a href="http://pi4j.com/example/listener.html">GPIO State Listener Example using Pi4J</a>
         <p>The following example demonstrates how to setup a listener for GPIO pin state changes on the Raspberry Pi. This listener implementation is far more efficient than constantly polling and querying for the the GPIO pin state. The listener implementation is based on GPIO hardware interrupts not state polling.</p>
         <h2>Wiring Diagram</h2>
-        <p>The following wiring diagram hows <img src="images/gpio-listener-example.png" /></p>
+        <p>The following wiring diagram shows the setup you need for the example <img alt="gpio-listener-example" src="images/gpio-listener-example.png" /></p>
 <pre>
 [jbosspi@raspi RaspberryPi]$ sudo ~/apache-ant-1.9.3/bin/ant ListenGpioExample
     Buildfile: /home/jbosspi/RaspberryPi/build.xml
 
     ListenGpioExample:
-         [java] <--Pi4J--> GPIO Listen Example ... started.
+         [java] &lt;Pi4J-&gt; GPIO Listen Example ... started.
     wiringPi: wiringPiSetup called
     piboardRev: Revision string: Revision	: 000e
     piboardRev: lastChar is: 'e' (101, 0x65)
     piBoardRev: Returning revision: 2
          [java]  ... complete the GPIO #02 circuit and see the listener feedback here in the console.
-         [java]  --> GPIO PIN STATE CHANGE: "GPIO 2" &lt;GPIO 2&gt; = HIGH
-         [java]  --> GPIO PIN STATE CHANGE: "GPIO 2" &lt;GPIO 2&gt; = LOW
-         [java]  --> GPIO PIN STATE CHANGE: "GPIO 2" &lt;GPIO 2&gt; = HIGH
-         [java]  --> GPIO PIN STATE CHANGE: "GPIO 2" &lt;GPIO 2&gt; = LOW
+         [java]  -&gt; GPIO PIN STATE CHANGE: "GPIO 2" &lt;GPIO 2&gt; = HIGH
+         [java]  -&gt; GPIO PIN STATE CHANGE: "GPIO 2" &lt;GPIO 2&gt; = LOW
+         [java]  -&gt; GPIO PIN STATE CHANGE: "GPIO 2" &lt;GPIO 2&gt; = HIGH
+         [java]  -&gt; GPIO PIN STATE CHANGE: "GPIO 2" &lt;GPIO 2&gt; = LOW
 ^C[jbosspi@raspi RaspberryPi]$
 </pre>
-        In the example output above, I pushed the momemtary button twice so that the GPIO pin 2 state cycles from
+        In the example output above, I pushed the momentary button twice so that the GPIO pin 2 state cycles from
         low to high twice.
 
         <h1>pilab.TriggerGpioExample</h1>
         Taken from: <a href="http://pi4j.com/example/trigger.html">GPIO Triggers Example using Pi4J</a>
+        <p>The following example demonstrates how to setup GPIO triggers. GPIO Triggers listen for pin state changes and
+            then perform some action on on alternate GPIO pin or perform a callback to a user specified method. Pi4J
+            includes several built in pre-defined trigger implementation classes or you can create your own trigger by
+            implementing the GpioTrigger interface. Triggers are based on the GPIO listener implementation and rely on
+            GPIO hardware interrupts not state polling.</p>
+        <p>The following wiring diagram shows the setup you need for the example <img alt="gpio-trigger-example" src="images/gpio-trigger-example.png" /></p>
+
+<pre class="prettyprint">
+</pre>
     </ui:define>
 </ui:composition>
 </html>
