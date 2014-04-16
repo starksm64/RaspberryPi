@@ -18,79 +18,99 @@ import org.jboss.devnation.pilab.Utility.NetworkInfo;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.MulticastSocket;
+import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.net.UnknownHostException;
 
 /**
+ * Broadcasts the IP address on the current interface
  * @author Scott Stark (sstark@redhat.com) (C) 2014 Red Hat Inc.
  */
 public class AddressSender {
+   private volatile boolean running;
+   private NetworkInfo networkInfo;
+   private InetSocketAddress serverAddress;
+
    public static void main(String[] args) throws Exception {
 
-      NetworkInfo networkInfo = Utility.determineIPAddress();
+      AddressSender sender = new AddressSender();
+      sender.initNetwork();
       if(args.length > 0) {
-         InetAddress serverAddress = InetAddress.getByName(args[0]);
          int port = Integer.parseInt(args[1]);
-         doSocket(serverAddress, networkInfo, port);
+         sender.initNetwork(args[0], port);
+         sender.doSocket();
       } else {
-         doBroadcast(networkInfo);
+         sender.doBroadcast();
       }
    }
 
-   /**
-    * Send TCP given the server address
-    * @param serverAddress
-    */
-   private static void doSocket(InetAddress serverAddress, NetworkInfo networkInfo, int port) {
-      InetAddress localAddress = networkInfo.getInetAddress();
+   public void initNetwork(String address, int port) throws UnknownHostException {
+      InetAddress inetAddress = InetAddress.getByName(address);
+      serverAddress = new InetSocketAddress(inetAddress, port);
+
+   }
+   public void initNetwork() throws SocketException {
+      networkInfo = Utility.determineIPAddress();
+   }
+   public void initNetwork(NetworkInfo networkInfo) {
+      this.networkInfo = networkInfo;
+   }
+   public void run() {
+      running = true;
       try {
-         Socket client = new Socket(serverAddress, port, localAddress, 0);
-         OutputStream os = client.getOutputStream();
-         DataOutputStream dos = new DataOutputStream(os);
-         String msg = String.format("%s%s", AddressListener.PI_ADDRESS, localAddress);
-         dos.writeUTF(msg);
-         dos.flush();
-         InputStream is = client.getInputStream();
-         DataInputStream dis = new DataInputStream(is);
-         String reply = dis.readUTF();
-         int myID = dis.readInt();
-         System.out.printf("%s, Client received id: %d", reply, myID);
-      } catch (IOException e) {
+         if(serverAddress != null)
+            doSocket();
+         else
+            doBroadcast();
+      } catch (Exception e) {
          e.printStackTrace();
       }
    }
+   public void stop() {
+      running = false;
+   }
+   /**
+    * Send TCP msg using given the server address
+    */
+   private void doSocket() throws Exception {
+      InetAddress localAddress = networkInfo.getInetAddress();
+      Socket client = new Socket(serverAddress.getAddress(), serverAddress.getPort(), localAddress, 0);
+      OutputStream os = client.getOutputStream();
+      DataOutputStream dos = new DataOutputStream(os);
+      String msg = String.format("%s%s", AddressListener.PI_ADDRESS, localAddress);
+      dos.writeUTF(msg);
+      dos.flush();
+      InputStream is = client.getInputStream();
+      DataInputStream dis = new DataInputStream(is);
+      String reply = dis.readUTF();
+      int myID = dis.readInt();
+      System.out.printf("%s, Client received id: %d", reply, myID);
+   }
 
    /**
-    * Broadcast UDP using the given network broadcast interface
-    * @param networkInfo
+    * Broadcast UDP msg using the given network broadcast interface
     * @throws Exception
     */
-   private static void doBroadcast(NetworkInfo networkInfo) throws Exception {
-      MulticastSocket socket = new MulticastSocket(4446);
-      socket.setNetworkInterface(networkInfo.iface);
-
+   private void doBroadcast() throws Exception {
       byte[] recvBuf = new byte[15000];
       DatagramSocket ds = new DatagramSocket();
       ds.setBroadcast(true);
       ds.setSoTimeout(5000);
-      while (true) {
-         // Notify the server using UDP broadcast
-         //Open a random port to send the package
-
-         String msg = String.format("%s:%s", AddressListener.PI_ADDRESS, networkInfo.getInetAddress());
+      while (running) {
+         String msg = String.format("%s:%s[%s]", AddressListener.PI_ADDRESS, networkInfo.getInetAddress(), networkInfo.getMAC());
          byte[] sendData = msg.getBytes();
 
          InetAddress broadcast = networkInfo.getBroadcastAddress();
          // Send the broadcast package!
          try {
-            DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, broadcast, 8888);
+            DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, broadcast, AddressListener.DATAGRAM_PORT);
             ds.send(sendPacket);
          } catch (Exception e) {
             e.printStackTrace();
@@ -98,28 +118,22 @@ public class AddressSender {
 
          System.out.printf(">>> Request packet sent to: %s; Interface: %s\n", broadcast, networkInfo.getDisplayName());
 
-         System.out.println(">>> Done looping over all network interfaces. Now waiting for a reply!");
 
          //Wait for a response
          DatagramPacket receivePacket = new DatagramPacket(recvBuf, recvBuf.length);
          try {
             ds.receive(receivePacket);
          } catch (SocketTimeoutException e) {
-            System.out.printf("Timed out waiting for reply, resending...");
             continue;
          }
 
-         //We have a response
          System.out.println(">>> Broadcast response from server: " + receivePacket.getAddress());
-
-         //Check if the message is correct
          ByteArrayInputStream bais = new ByteArrayInputStream(receivePacket.getData());
          DataInputStream dis = new DataInputStream(bais);
          String message = dis.readUTF();
          int myID = dis.readInt();
          System.out.printf("%s, %d\n", message, myID);
-         ds.close();
-         System.exit(0);
       }
+      ds.close();
    }
 }

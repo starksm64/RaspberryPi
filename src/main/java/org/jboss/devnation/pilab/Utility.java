@@ -69,12 +69,12 @@ public class Utility {
       }
 
       if(nonloopback == null) {
-         throw new IllegalStateException("Failed to find an nonloopback interface that is up");
+         throw new SocketException("Failed to find an nonloopback interface that is up");
       }
       List<InterfaceAddress> ifaceAddresses = nonloopback.getInterfaceAddresses();
       InterfaceAddress ifaceAddress = null;
       for(InterfaceAddress ia : ifaceAddresses) {
-         InetAddress inetAddress = inetAddress = ia.getAddress();
+         InetAddress inetAddress = ia.getAddress();
          if(inetAddress instanceof Inet4Address) {
             ifaceAddress = ia;
             break;

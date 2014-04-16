@@ -13,16 +13,14 @@ package org.jboss.devnation.pilab;
  * limitations under the License.
  */
 
+import org.jboss.devnation.pilab.Utility.NetworkInfo;
 import org.jboss.logging.Logger;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.RandomAccessFile;
-import java.net.Inet4Address;
 import java.net.InetAddress;
-import java.net.NetworkInterface;
 import java.net.SocketException;
-import java.util.Enumeration;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -38,17 +36,21 @@ public class BlinkIpAddress implements Runnable {
    static final String START = "/var/lib/blink-start";
    /** Path to file system trigger for shutting down the blinking */
    static final String SHUTDOWN = "/var/lib/blink-shutdown";
-   /** Path to file system trigger for shutting down the blinking */
+   /** Path to file system trigger for indicating the current blink index */
    static final String INDEX = "/var/lib/blink-index";
+   /** Path to file system trigger for indicating we should broadcast our address */
+   static final String BROADCAST = "/var/lib/blink-broadcast";
 
    /** Path to file system control of LED0 */
    private static final String LED0 = "/sys/class/leds/led0/brightness";
    private FileOutputStream led0;
    private int iterations = -1;
+   private NetworkInfo networkInfo;
    private char[] fullIpAddress;
    private String fullIpAddressString;
    private String macaddr;
    private int fullIpAddressIndex;
+   private AddressSender addressSender;
    private Exception errorState;
    private volatile boolean stopped;
 
@@ -66,6 +68,10 @@ public class BlinkIpAddress implements Runnable {
 
    public static String getIndex() {
       return INDEX;
+   }
+
+   public static String getBroadcast() {
+      return BROADCAST;
    }
 
    public BlinkIpAddress() {
@@ -111,39 +117,8 @@ public class BlinkIpAddress implements Runnable {
    }
 
    public void init() throws SocketException {
-      Enumeration<NetworkInterface> ifaces = NetworkInterface.getNetworkInterfaces();
-      NetworkInterface nonloopback = null;
-      // Choose the first non-loopback interface
-      while(ifaces.hasMoreElements()) {
-         NetworkInterface iface = ifaces.nextElement();
-         logger.infof("Checking iface: %s\n", iface.getDisplayName());
-         if(iface.isUp() && iface.isLoopback() == false) {
-            nonloopback = iface;
-         }
-      }
-
-      if(nonloopback == null) {
-         throw new IllegalStateException("Failed to find an nonloopback interface that is up");
-      }
-      byte[] mac = nonloopback.getHardwareAddress();
-      StringBuilder macaddr = new StringBuilder();
-      for(int n = 0; n < mac.length; n ++) {
-         String x = String.format("%x", mac[n]);
-         macaddr.append(x);
-         macaddr.append(':');
-      }
-      macaddr.setLength(macaddr.length()-1);
-      this.macaddr = macaddr.toString();
-      Enumeration<InetAddress> inetAddresses = nonloopback.getInetAddresses();
-      InetAddress inetAddress = null;
-      while(inetAddresses.hasMoreElements()) {
-         inetAddress = inetAddresses.nextElement();
-         if(inetAddress instanceof Inet4Address)
-            break;
-      }
-      // Print out interface name, ip address and mac address
-      logger.infof("Selected %s, %s[%s]\n", nonloopback.getDisplayName(), inetAddress, macaddr);
-
+      networkInfo = Utility.determineIPAddress();
+      InetAddress inetAddress = networkInfo.getInetAddress();
       String iterStr = iterations < 0 ? "infinite" : ""+iterations;
       logger.infof("Doing (%s) iterations of the link sequence for IPAddress(%s); -1==infinite\n", iterStr,
          inetAddress.getHostAddress());
@@ -175,7 +150,7 @@ public class BlinkIpAddress implements Runnable {
     * @throws Exception
     */
    public void start() throws Exception {
-      logger.debugf(new Exception("Trace"), "start called from here\n");
+//      logger.debugf(new Exception("Trace"), "start called from here\n");
 
       // Begin flashing the address code
       led0 = new FileOutputStream(LED0);
@@ -197,8 +172,19 @@ public class BlinkIpAddress implements Runnable {
          logger.infof("------------\n");
       }
    }
+   public void startBroadcast() {
+      addressSender = new AddressSender();
+      addressSender.initNetwork(networkInfo);
+      addressSender.run();
+   }
    public void stop() {
       stopped = true;
+   }
+   public void stopBroadcast() {
+      if(addressSender != null) {
+         addressSender.stop();
+         addressSender = null;
+      }
    }
 
    /**
@@ -260,8 +246,8 @@ public class BlinkIpAddress implements Runnable {
     * @param args
     */
    public static void main(String[] args) throws Exception {
-      ExecutorService service = Executors.newFixedThreadPool(1);
-      BlinkIpAddress blink = new BlinkIpAddress();
+      ExecutorService service = Executors.newFixedThreadPool(2);
+      final BlinkIpAddress blink = new BlinkIpAddress();
       blink.init();
       Future blinkFuture = service.submit(blink);
 
@@ -272,10 +258,20 @@ public class BlinkIpAddress implements Runnable {
       deleteOrExit(stop);
       File start = new File(START);
       deleteOrExit(start);
+      File broadcast = new File(BROADCAST);
       RandomAccessFile index = new RandomAccessFile(INDEX, "rwd");
 
+      // Broadcast the adddress as well
+      if(broadcast.exists()) {
+         service.submit(new Runnable() {
+            @Override
+            public void run() {
+               blink.startBroadcast();
+            }
+         });
+      }
       // Loop, monitoring the /var/local/* file system triggers
-      while(shutdown.exists() == false) {
+      while(!shutdown.exists()) {
          try {
             Thread.sleep(500);
             index.writeInt(blink.getFullIpAddressIndex());

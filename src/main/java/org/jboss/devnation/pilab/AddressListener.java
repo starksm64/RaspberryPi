@@ -29,11 +29,12 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
+ * List for broadcasts on
  * @author Scott Stark (sstark@redhat.com) (C) 2014 Red Hat Inc.
  */
 public class AddressListener {
-   private static int DATAGRAM_PORT = 8888;
-   private static int SERVER_PORT = 8889;
+   public static int DATAGRAM_PORT = 8888;
+   public static int SERVER_PORT = 8889;
 
    public static String PI_ADDRESS = "PI_ADDRESS";
    private static AtomicInteger piID = new AtomicInteger(0);
@@ -41,19 +42,21 @@ public class AddressListener {
    static ExecutorService pool = Executors.newFixedThreadPool(4);
 
    public static void main(String[] args) throws Exception {
-      final InetAddress address = InetAddress.getByName(args[0]);
       pool.submit(new Runnable() {
          @Override
          public void run() {
             runDatagramSocket();
          }
       });
-      pool.submit(new Runnable() {
-         @Override
-         public void run() {
-            runStandardSocket(address);
-         }
-      });
+      if(args.length > 0) {
+         final InetAddress address = InetAddress.getByName(args[0]);
+         pool.submit(new Runnable() {
+            @Override
+            public void run() {
+               runStandardSocket(address);
+            }
+         });
+      }
    }
 
    public static void runStandardSocket(final InetAddress address) {
