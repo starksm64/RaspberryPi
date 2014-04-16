@@ -173,6 +173,7 @@ public class BlinkIpAddress implements Runnable {
       }
    }
    public void startBroadcast() {
+      logger.info("Starting ip address broadcast");
       addressSender = new AddressSender();
       addressSender.initNetwork(networkInfo);
       addressSender.run();

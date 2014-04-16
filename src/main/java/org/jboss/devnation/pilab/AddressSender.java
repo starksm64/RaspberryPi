@@ -14,6 +14,7 @@ package org.jboss.devnation.pilab;
  */
 
 import org.jboss.devnation.pilab.Utility.NetworkInfo;
+import org.jboss.logging.Logger;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
@@ -34,6 +35,8 @@ import java.net.UnknownHostException;
  * @author Scott Stark (sstark@redhat.com) (C) 2014 Red Hat Inc.
  */
 public class AddressSender {
+   private static Logger logger = Logger.getLogger(AddressSender.class);
+
    private volatile boolean running;
    private NetworkInfo networkInfo;
    private InetSocketAddress serverAddress;
@@ -70,7 +73,7 @@ public class AddressSender {
          else
             doBroadcast();
       } catch (Exception e) {
-         e.printStackTrace();
+         logger.warn("Failed to run address send", e);
       }
    }
    public void stop() {
@@ -80,6 +83,7 @@ public class AddressSender {
     * Send TCP msg using given the server address
     */
    private void doSocket() throws Exception {
+      logger.info("Begin doSocket()");
       InetAddress localAddress = networkInfo.getInetAddress();
       Socket client = new Socket(serverAddress.getAddress(), serverAddress.getPort(), localAddress, 0);
       OutputStream os = client.getOutputStream();
@@ -91,7 +95,7 @@ public class AddressSender {
       DataInputStream dis = new DataInputStream(is);
       String reply = dis.readUTF();
       int myID = dis.readInt();
-      System.out.printf("%s, Client received id: %d", reply, myID);
+      logger.infof("End doSocket(), %s, Client received id: %d", reply, myID);
    }
 
    /**
@@ -99,6 +103,7 @@ public class AddressSender {
     * @throws Exception
     */
    private void doBroadcast() throws Exception {
+      logger.info("Begin doBroadcast()");
       byte[] recvBuf = new byte[15000];
       DatagramSocket ds = new DatagramSocket();
       ds.setBroadcast(true);
@@ -108,7 +113,7 @@ public class AddressSender {
          byte[] sendData = msg.getBytes();
 
          InetAddress broadcast = networkInfo.getBroadcastAddress();
-         // Send the broadcast package!
+         logger.infof(">>> Sending: %s; to: %s\n", msg, broadcast);
          try {
             DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length, broadcast, AddressListener.DATAGRAM_PORT);
             ds.send(sendPacket);
@@ -116,7 +121,7 @@ public class AddressSender {
             e.printStackTrace();
          }
 
-         System.out.printf(">>> Request packet sent to: %s; Interface: %s\n", broadcast, networkInfo.getDisplayName());
+         logger.infof(">>> Request packet sent to: %s; Interface: %s\n", broadcast, networkInfo.getDisplayName());
 
 
          //Wait for a response
@@ -127,13 +132,15 @@ public class AddressSender {
             continue;
          }
 
-         System.out.println(">>> Broadcast response from server: " + receivePacket.getAddress());
+         logger.info(">>> Broadcast response from server: " + receivePacket.getAddress());
          ByteArrayInputStream bais = new ByteArrayInputStream(receivePacket.getData());
          DataInputStream dis = new DataInputStream(bais);
          String message = dis.readUTF();
          int myID = dis.readInt();
-         System.out.printf("%s, %d\n", message, myID);
+         logger.infof("%s, %d\n", message, myID);
+         Thread.sleep(5000);
       }
       ds.close();
+      logger.info("End doBroadcast()");
    }
 }
