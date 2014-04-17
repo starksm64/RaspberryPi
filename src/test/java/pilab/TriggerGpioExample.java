@@ -42,7 +42,6 @@ import com.pi4j.io.gpio.trigger.GpioCallbackTrigger;
 import com.pi4j.io.gpio.trigger.GpioPulseStateTrigger;
 import com.pi4j.io.gpio.trigger.GpioSetStateTrigger;
 import com.pi4j.io.gpio.trigger.GpioSyncStateTrigger;
-import org.junit.Test;
 
 import java.util.concurrent.Callable;
 
@@ -53,8 +52,7 @@ import java.util.concurrent.Callable;
  */
 public class TriggerGpioExample {
 
-   @Test
-   public void main() throws InterruptedException {
+   public static void main(String[] args) throws InterruptedException {
 
         System.out.println("<--Pi4J--> GPIO Trigger Example ... started.");
 
